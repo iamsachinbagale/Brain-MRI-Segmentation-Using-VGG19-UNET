@@ -1,1 +1,1 @@
-# Brain-MRI-Segmentation-Using-VGG19-UNET
+# Brain-MRI-Segmentation-Using-UNET
