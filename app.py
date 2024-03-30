@@ -35,36 +35,25 @@ def jaccard_distance(y_true, y_pred):
     y_pred_flatten = K.flatten(y_pred)
     return -iou(y_true_flatten, y_pred_flatten)
 
-# Function to set background image
-@st.cache(allow_output_mutation=True)
-def get_base64_of_bin_file(url):
-    try:
-        response = requests.get(url)
-        data = response.content
-        return base64.b64encode(data).decode()
-    except Exception as e:
-        st.error(f"Error: {e}")
-        st.stop()
-
-def set_png_as_page_bg(url):
-    bin_str = get_base64_of_bin_file(url)
-    page_bg_img = f'''
-    <style>
-    body {{
-    background-image: url("data:image/png;base64,{bin_str}");
+page_bg_img = """
+<style>
+[data-testid="stAppViewContainer"] {
+    background-image: url("https://github.com/iamsachinbagale/Brain-Tumor-Segmentation-Using-UNet/blob/main/Images/background.jpg");
     background-size: cover;
-    }}
-    </style>
-    '''
-    
-    st.markdown(page_bg_img, unsafe_allow_html=True)
+    background-repeat: no-repeat;
+    background-position: center;
+}
+[data-testid="stHeader"] {
+    background-color: transparent;
+}
 
-# Load segmentation model and define utility functions
-# Define the model and utility functions here...
+data-testid="stToolbar"{
+right: 2rem;
+}
+</style>
+"""
+st.markdown(page_bg_img, unsafe_allow_html=True)
 
-# Set background image
-background_image_url = "https://github.com/iamsachinbagale/Brain-Tumor-Segmentation-Using-UNet/raw/main/Images/background.jpg"
-set_png_as_page_bg(background_image_url)
 
 # Main Streamlit app code
 st.title("Brain MRI Segmentation App")
