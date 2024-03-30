@@ -37,7 +37,7 @@ def set_png_as_page_bg(png_file):
 # Define the model and utility functions here...
 
 # Set background image
-background_image_path = os.path.join("Images", "background.png")
+background_image_path = os.path.join("Images", "background.jpg")
 set_png_as_page_bg(background_image_path)
 
 # Main Streamlit app code
