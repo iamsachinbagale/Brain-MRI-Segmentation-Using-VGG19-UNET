@@ -1,3 +1,4 @@
+import os
 import base64
 import numpy as np
 import streamlit as st
@@ -11,9 +12,13 @@ plt.style.use("ggplot")
 # Function to set background image
 @st.cache(allow_output_mutation=True)
 def get_base64_of_bin_file(bin_file):
-    with open(bin_file, 'rb') as f:
-        data = f.read()
-    return base64.b64encode(data).decode()
+    try:
+        with open(bin_file, 'rb') as f:
+            data = f.read()
+        return base64.b64encode(data).decode()
+    except FileNotFoundError:
+        st.error(f"Error: Background image file '{bin_file}' not found.")
+        st.stop()
 
 def set_png_as_page_bg(png_file):
     bin_str = get_base64_of_bin_file(png_file)
@@ -29,35 +34,18 @@ def set_png_as_page_bg(png_file):
     st.markdown(page_bg_img, unsafe_allow_html=True)
 
 # Load segmentation model and define utility functions
-def dice_coefficients(y_true, y_pred, smooth=100):
-    y_true_flatten = K.flatten(y_true)
-    y_pred_flatten = K.flatten(y_pred)
-
-    intersection = K.sum(y_true_flatten * y_pred_flatten)
-    union = K.sum(y_true_flatten) + K.sum(y_pred_flatten)
-    return (2 * intersection + smooth) / (union + smooth)
-
-def dice_coefficients_loss(y_true, y_pred, smooth=100):
-    return -dice_coefficients(y_true, y_pred, smooth)
-
-def iou(y_true, y_pred, smooth=100):
-    intersection = K.sum(y_true * y_pred)
-    sum = K.sum(y_true + y_pred)
-    iou = (intersection + smooth) / (sum - intersection + smooth)
-    return iou
-
-def jaccard_distance(y_true, y_pred):
-    y_true_flatten = K.flatten(y_true)
-    y_pred_flatten = K.flatten(y_pred)
-    return -iou(y_true_flatten, y_pred_flatten)
-
-# Load the model
-st.title("Brain MRI Segmentation App")
-model = load_model("ResUNet-segmodel-brain-mri-v9.h5", custom_objects={
-        'dice_coef_loss': dice_coefficients_loss, 'iou': iou, 'dice_coef': dice_coefficients})
+# Define the model and utility functions here...
 
 # Set background image
-set_png_as_page_bg('background.png')
+background_image_path = os.path.join("Images", "background.png")
+set_png_as_page_bg(background_image_path)
+
+# Main Streamlit app code
+st.title("Brain MRI Segmentation App")
+
+# Load the segmentation model
+model = load_model("ResUNet-segmodel-brain-mri-v9.h5", custom_objects={
+        'dice_coef_loss': dice_coefficients_loss, 'iou': iou, 'dice_coef': dice_coefficients})
 
 im_height = 256
 im_width = 256
@@ -80,3 +68,4 @@ if file:
             st.image(pred_img)
         else:
             continue
+
