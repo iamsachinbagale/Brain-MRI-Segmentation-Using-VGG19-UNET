@@ -1,3 +1,4 @@
+import base64
 import numpy as np
 import streamlit as st
 import matplotlib.pyplot as plt
@@ -7,7 +8,27 @@ import cv2
 
 plt.style.use("ggplot")
 
+# Function to set background image
+@st.cache(allow_output_mutation=True)
+def get_base64_of_bin_file(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
 
+def set_png_as_page_bg(png_file):
+    bin_str = get_base64_of_bin_file(png_file)
+    page_bg_img = '''
+    <style>
+    body {
+    background-image: url("data:image/png;base64,%s");
+    background-size: cover;
+    }
+    </style>
+    ''' % bin_str
+    
+    st.markdown(page_bg_img, unsafe_allow_html=True)
+
+# Load segmentation model and define utility functions
 def dice_coefficients(y_true, y_pred, smooth=100):
     y_true_flatten = K.flatten(y_true)
     y_pred_flatten = K.flatten(y_pred)
@@ -16,10 +37,8 @@ def dice_coefficients(y_true, y_pred, smooth=100):
     union = K.sum(y_true_flatten) + K.sum(y_pred_flatten)
     return (2 * intersection + smooth) / (union + smooth)
 
-
 def dice_coefficients_loss(y_true, y_pred, smooth=100):
     return -dice_coefficients(y_true, y_pred, smooth)
-
 
 def iou(y_true, y_pred, smooth=100):
     intersection = K.sum(y_true * y_pred)
@@ -27,22 +46,24 @@ def iou(y_true, y_pred, smooth=100):
     iou = (intersection + smooth) / (sum - intersection + smooth)
     return iou
 
-
 def jaccard_distance(y_true, y_pred):
     y_true_flatten = K.flatten(y_true)
     y_pred_flatten = K.flatten(y_pred)
     return -iou(y_true_flatten, y_pred_flatten)
 
-
+# Load the model
 st.title("Brain MRI Segmentation App")
 model = load_model("ResUNet-segmodel-brain-mri-v9.h5", custom_objects={
         'dice_coef_loss': dice_coefficients_loss, 'iou': iou, 'dice_coef': dice_coefficients})
 
+# Set background image
+set_png_as_page_bg('background.png')
+
 im_height = 256
 im_width = 256
 
-file = st.file_uploader("Upload file", type=[
-                            "csv", "png", "jpg"], accept_multiple_files=True)
+# File uploader and prediction
+file = st.file_uploader("Upload file", type=["csv", "png", "jpg"], accept_multiple_files=True)
 if file:
     for i in file:
         st.header("Original Image:")
