@@ -7,6 +7,10 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.models import load_model
 import cv2
 import requests
+from util import classify, set_background
+
+
+set_background('https://github.com/iamsachinbagale/Brain-Tumor-Segmentation-Using-UNet/blob/main/Images/background.jpg')
 
 plt.style.use("ggplot")
 
@@ -34,25 +38,6 @@ def jaccard_distance(y_true, y_pred):
     y_true_flatten = K.flatten(y_true)
     y_pred_flatten = K.flatten(y_pred)
     return -iou(y_true_flatten, y_pred_flatten)
-
-page_bg_img = """
-<style>
-[data-testid="stAppViewContainer"] {
-    background-image: url("https://github.com/iamsachinbagale/Brain-Tumor-Segmentation-Using-UNet/blob/main/Images/background.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-[data-testid="stHeader"] {
-    background-color: transparent;
-}
-
-data-testid="stToolbar"{
-right: 2rem;
-}
-</style>
-"""
-st.markdown(page_bg_img, unsafe_allow_html=True)
 
 
 # Main Streamlit app code
