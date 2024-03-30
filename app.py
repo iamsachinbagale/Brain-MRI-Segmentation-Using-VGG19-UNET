@@ -36,25 +36,25 @@ def jaccard_distance(y_true, y_pred):
 
 # Function to set background image
 @st.cache(allow_output_mutation=True)
-def get_base64_of_bin_file(bin_file):
+def get_base64_of_bin_file(url):
     try:
-        with open(bin_file, 'rb') as f:
-            data = f.read()
+        response = requests.get(url)
+        data = response.content
         return base64.b64encode(data).decode()
-    except FileNotFoundError:
-        st.error(f"Error: Background image file '{bin_file}' not found.")
+    except Exception as e:
+        st.error(f"Error: {e}")
         st.stop()
 
-def set_png_as_page_bg(png_file):
-    bin_str = get_base64_of_bin_file(png_file)
-    page_bg_img = '''
+def set_png_as_page_bg(url):
+    bin_str = get_base64_of_bin_file(url)
+    page_bg_img = f'''
     <style>
-    body {
-    background-image: url("data:image/png;base64,%s");
+    body {{
+    background-image: url("data:image/png;base64,{bin_str}");
     background-size: cover;
-    }
+    }}
     </style>
-    ''' % bin_str
+    '''
     
     st.markdown(page_bg_img, unsafe_allow_html=True)
 
@@ -62,9 +62,8 @@ def set_png_as_page_bg(png_file):
 # Define the model and utility functions here...
 
 # Set background image
-background_image_path = os.path.join("Images", "background.png")
-print("Background image path:", background_image_path)  # Add this line for debugging
-set_png_as_page_bg(background_image_path)
+background_image_url = "https://github.com/iamsachinbagale/Brain-Tumor-Segmentation-Using-UNet/raw/main/Images/background.jpg"
+set_png_as_page_bg(background_image_url)
 
 # Main Streamlit app code
 st.title("Brain MRI Segmentation App")
