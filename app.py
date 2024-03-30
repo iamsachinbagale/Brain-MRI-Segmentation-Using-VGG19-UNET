@@ -62,11 +62,13 @@ def set_png_as_page_bg(png_file):
 # Define the model and utility functions here...
 
 # Set background image
-background_image_path = os.path.join("Images", "background.jpg")
+background_image_path = os.path.join("Images", "background.png")
+print("Background image path:", background_image_path)  # Add this line for debugging
 set_png_as_page_bg(background_image_path)
 
 # Main Streamlit app code
 st.title("Brain MRI Segmentation App")
+
 
 # Load the segmentation model
 model = load_model("ResUNet-segmodel-brain-mri-v9.h5", custom_objects={
