@@ -7,10 +7,9 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.models import load_model
 import cv2
 import requests
-from util import classify, set_background
+from util import visualize, set_background
 
-
-set_background('https://github.com/iamsachinbagale/Brain-Tumor-Segmentation-Using-UNet/blob/main/Images/background.jpg')
+set_background('./bg.png')
 
 plt.style.use("ggplot")
 
