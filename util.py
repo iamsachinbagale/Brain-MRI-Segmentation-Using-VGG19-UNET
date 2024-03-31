@@ -1,6 +1,5 @@
 import base64
 
-import plotly.graph_objects as go
 import streamlit as st
 
 def set_background(image_file):
